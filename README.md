@@ -1,4 +1,4 @@
-# Budget Brain 🧠
+# AI Budget 🧠
 
 > Log your spending in plain English. Get AI-powered warnings before you overspend — not after.
 
