@@ -217,6 +217,66 @@ print(answer)
 **Why this works:** The AI doesn't guess. It reads your actual numbers before answering. The context block is rebuilt fresh on every question, so answers always reflect your current data.
 
 ---
+## Test Results
+
+These are real outputs from running the POC — not mock data.
+
+### Transaction parser
+
+The parser correctly identified the type, amount, category, and description from plain English input across all 5 test cases.
+
+Input:  "grabbed coffee and a bagel, $11"
+Output: { "type": "expense", "amount": 11, "category": "food", "description": "coffee and bagel", "date": "2026-03-25" }
+
+Input:  "paid $850 rent"
+Output: { "type": "expense", "amount": 850, "category": "rent", "description": "rent payment", "date": "2026-03-25" }
+
+Input:  "got paid $1200 from freelance project"
+Output: { "type": "income", "amount": 1200, "category": "income", "description": "freelance project payment", "date": "2026-03-25" }
+
+Input:  "Uber to the airport $34"
+Output: { "type": "expense", "amount": 34, "category": "transport", "description": "Uber to airport", "date": "2026-03-25" }
+
+Input:  "Netflix subscription $16"
+Output: { "type": "expense", "amount": 16, "category": "subscriptions", "description": "Netflix subscription", "date": "2026-03-25" }
+
+Key observations:
+- Correctly distinguished income vs expense without being told explicitly
+- Pulled the exact dollar amount from varied input formats
+- Assigned the right category every time with no manual tagging
+- Cleaned up descriptions into short, consistent labels
+
+---
+
+### RAG chat
+
+The chat was seeded with sample transaction data and asked 3 questions. All answers reference real numbers from the data — no generic advice.
+
+Spending data used:
+  Total income:   $1800.00
+  Total expenses: $1241.00
+  Net balance:    $559.00
+  rent: $850 | food: $168 | entertainment: $145 | transport: $46 | subscriptions: $32
+
+Q: Where is most of my money going?
+A: Rent at $850 accounts for 68% of total expenses. Food is second at $168 (14%),
+   followed by entertainment at $145 (12%), transport at $46 (4%), and subscriptions
+   at $32 (3%). Rent takes up nearly half (47%) of total income.
+
+Q: Am I spending too much on food?
+A: Food spending of $168 is about 9.3% of income — within the recommended 10-15%
+   range. Food appears well-controlled. The bigger budget pressure is rent at 47%
+   of income.
+
+Q: Am I on track to save anything this month?
+A: Yes. Income of $1,800 exceeds expenses of $1,241, leaving a net balance of $559
+   — about 31% of income going toward savings.
+
+Key observations:
+- Every answer cited specific dollar amounts from the actual data
+- The AI correctly calculated percentages on its own
+- Answers were comparative — contextualizing each number against the others
+- No generic advice — everything was grounded in the numbers provided
 
 ## What's Next
 
